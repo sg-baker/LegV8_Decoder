@@ -1,7 +1,3 @@
-from audioop import add
-from email.headerregistry import Address
-from pickletools import opcodes
-from tkinter.tix import IMMEDIATE
 import opcodes as op
 
 # Output variables
