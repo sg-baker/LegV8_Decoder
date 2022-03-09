@@ -3,6 +3,7 @@
 # {Command : [type, opcode, *shamt]}
 # * - shamt if it is an R type instruction
 
+
 opcodes = {'B': ['B', '000101'],
            'FMULS': ['R', '00011110001', '000010'],
            'FDIVS': ['R', '00011110001', '000110'],
@@ -60,3 +61,31 @@ opcodes = {'B': ['B', '000101'],
            'LDURD': ['R', '11111100010', '000000']
            } 
 
+# This is a function that converts binary values to their 2's complement
+
+def twos_complement(binary_value):
+    # Reverse binary value to work from LSB to MSB
+    backwards_value = binary_value[::-1]
+    complement = ''
+        
+    # Convert the binary value to 2's complement. Easiest way to do this
+    # is to keep the first 1 that you come across, and then flip every bit
+    # beyond that.
+
+    # Flipping logic
+    one_encountered = False
+    for bit in backwards_value:
+        if one_encountered == True:
+            if bit == '1':
+                complement += '0'
+            else:
+                complement += '1'
+        else:
+            if bit == '1':
+                complement += '1'
+                one_encountered = True
+            else:
+                complement += '0'
+     
+    # Returning new address
+    return complement[::-1]

@@ -55,20 +55,54 @@ elif instr_type == 'I':
     rd = instruction[0].lstrip('X')
     #print(rd, ' ', rn, ' ', imm)
 
+    # Checking for a negative immediate
+    if int(imm) < 0:
+       imm = bin(int(imm)).lstrip('-0b')
+       negative_imm = True
+    else:
+        negative_imm = False
+        imm = bin(int(imm)).lstrip('0b')
+
     # Converting to binary
-    imm = bin(int(imm)).lstrip('0b')
     rn = bin(int(rn)).lstrip('0b')
     rd = bin(int(rd)).lstrip('0b')
     #print(rd, ' ', rn, ' ', imm)
 
 
-    # TODO: Make a use case for the immediate being negative
 
     # Adding leading zeros if needed
     imm = '0' * (12 - len(imm)) + imm
     rn = '0' * (5 - len(rn)) + rn 
     rd = '0' * (5 - len(rd)) + rd
     #print(rd, ' ', rn, ' ', imm)
+
+    # Now we can convert to 2's complement since all of the leading zeros have been added
+    if negative_imm:
+        # Reverse immediate to work from LSB to MSB
+        imm = imm[::-1]
+        complement = ''
+        
+        # Convert the immediate to 2's complement. Easiest way to do this
+        # is to keep the first 1 that you come across, and then flip every bit
+        # beyond that.
+
+        # Flipping logic
+        one_encountered = False
+        for bit in imm:
+            if one_encountered == True:
+                if bit == '1':
+                    complement += '0'
+                else:
+                    complement += '1'
+            else:
+                if bit == '1':
+                    complement += '1'
+                    one_encountered = True
+                else:
+                    complement += '0'
+        
+        # Assigning new address
+        imm = complement[::-1]
 
     # Putting full instruction together
     machine_binary = opcode + imm + rn + rd
@@ -87,10 +121,15 @@ elif instr_type == 'D':
     rt = instruction[0].lstrip('X')
     #print(two_bit_op, ' ', address, ' ', rn, ' ', rt)
 
-    # TODO: Make a use case for the address being negative
-
+    # Checking for a negative address
+    if int(address) < 0:
+       address = bin(int(address)).lstrip('-0b')
+       negative_address = True
+    else:
+        negative_address = False
+        address = bin(int(address)).lstrip('0b')
+    
     # Converting to binary
-    address = bin(int(address)).lstrip('0b')
     rn = bin(int(rn)).lstrip('0b')
     rt = bin(int(rt)).lstrip('0b')
     #print(two_bit_op, ' ', address, ' ', rn, ' ', rt)
@@ -101,6 +140,29 @@ elif instr_type == 'D':
     rt = '0' * (5 - len(rt)) + rt
     #print(two_bit_op, ' ', address, ' ', rn, ' ', rt)
 
+    # Now we can convert to 2's complement since all of the leading zeros have been added
+    if negative_address:
+        address = address[::-1]
+        complement = ''
+
+        # Flipping logic
+        one_encountered = False
+        for bit in address:
+            if one_encountered == True:
+                if bit == '1':
+                    complement += '0'
+                else:
+                    complement += '1'
+            else:
+                if bit == '1':
+                    complement += '1'
+                    one_encountered = True
+                else:
+                    complement += '0'
+        
+        # Assigning new address
+        address = complement[::-1]
+
     # Putting full instruction together
     machine_binary = opcode + address + two_bit_op + rn + rt
     #print(machine_binary)  
@@ -110,15 +172,40 @@ elif instr_type == 'B':
     address = instruction.split(' ')[1]
     #print(address)
 
-    # TODO: Make a use case for the address being negative
-
-    # Converting to binary
-    address = bin(int(address)).lstrip('0b')
-    #print(address)
+    # Checking for a negative address
+    if int(address) < 0:
+       address = bin(int(address)).lstrip('-0b')
+       negative_address = True
+    else:
+        negative_address = False
+        address = bin(int(address)).lstrip('0b')
 
     # Adding leading zeros
     address = '0' * (26 - len(address)) + address
     #print(address)
+
+    # 2's complemnt logic
+    if negative_address:
+        address = address[::-1]
+        complement = ''
+
+        # Flipping logic
+        one_encountered = False
+        for bit in address:
+            if one_encountered == True:
+                if bit == '1':
+                    complement += '0'
+                else:
+                    complement += '1'
+            else:
+                if bit == '1':
+                    complement += '1'
+                    one_encountered = True
+                else:
+                    complement += '0'
+        
+        # Assigning new address
+        address = complement[::-1]
 
     # Putting full instruction together
     machine_binary = opcode + address
@@ -134,7 +221,14 @@ elif instr_type == 'CB':
     address = instruction[1].lstrip(' ')
     rt = instruction[0].lstrip('X')
     #print(address, ' ', rt)
-    # TODO: Make a use case for the address being negative
+
+    # Checking for a negative address
+    if int(address) < 0:
+       address = bin(int(address)).lstrip('-0b')
+       negative_address = True
+    else:
+        negative_address = False
+        address = bin(int(address)).lstrip('0b')
 
     # Converting to binary
     address = bin(int(address)).lstrip('0b')
@@ -145,6 +239,29 @@ elif instr_type == 'CB':
     address = '0' * (19 - len(address)) + address
     rt = '0' * (5 - len(rt)) + rt
     #print(address, ' ', rt)
+
+    # 2's complemnt logic
+    if negative_address:
+        address = address[::-1]
+        complement = ''
+
+        # Flipping logic
+        one_encountered = False
+        for bit in address:
+            if one_encountered == True:
+                if bit == '1':
+                    complement += '0'
+                else:
+                    complement += '1'
+            else:
+                if bit == '1':
+                    complement += '1'
+                    one_encountered = True
+                else:
+                    complement += '0'
+        
+        # Assigning new address
+        address = complement[::-1]
 
     # Putting full instruction together
     machine_binary = opcode + address + rt
@@ -162,7 +279,13 @@ elif instr_type == 'IM':
     rd = instruction[0].lstrip('X')
     #print(imm, ' ', rd)
 
-    # TODO: Make a use case for the address being negative
+    # Checking for a negative immediate
+    if int(imm) < 0:
+       imm = bin(int(imm)).lstrip('-0b')
+       negative_imm = True
+    else:
+        negative_imm = False
+        imm = bin(int(imm)).lstrip('0b')
 
     # Converting to binary
     imm = bin(int(imm)).lstrip('0b')
@@ -173,6 +296,27 @@ elif instr_type == 'IM':
     imm = '0' * (16 - len(imm)) + imm
     rd = '0' * (5 - len(rd)) + rd
     #print(imm, ' ', rd)
+
+    if negative_imm:
+        imm = imm[::-1]
+        complement = ''
+        
+        one_encountered = False
+        for bit in imm:
+            if one_encountered == True:
+                if bit == '1':
+                    complement += '0'
+                else:
+                    complement += '1'
+            else:
+                if bit == '1':
+                    complement += '1'
+                    one_encountered = True
+                else:
+                    complement += '0'
+        
+        # Assigning new address
+        imm = complement[::-1]
 
     # Putting full instruction together
     machine_binary = opcode + imm + rd
