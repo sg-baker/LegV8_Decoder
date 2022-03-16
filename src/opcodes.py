@@ -87,5 +87,5 @@ def twos_complement(binary_value):
             else:
                 complement += '0'
      
-    # Returning new address
+    # Returning new value
     return complement[::-1]

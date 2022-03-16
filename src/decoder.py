@@ -6,7 +6,30 @@ machine_hex = ''
 
 # Taking input
 print("Please input a valid LegV8 assembly command.\n")
-instruction = input()
+
+# Checking for valid instruction
+while True:
+    instruction = input()
+    command = instruction.split(' ', 1)[0]
+
+    if command.isupper() == False:
+        print("Invalid instrction. Make sure all characters are uppercase.")
+        print("Please input a valid LegV8 assembly command.\n")
+        continue
+
+    if command in op.opcodes:
+        instr_type = op.opcodes[command][0]
+        opcode = op.opcodes[command][1]
+    else:
+        print("Instruction not found in instruction set.")
+        print("Please input a valid LegV8 assembly command.\n")
+        continue
+
+    # If it gets to here, its a valid instruction
+    break
+    
+
+
 
 # Parsing the instruction
 command = instruction.split(' ', 1)[0]
@@ -78,31 +101,7 @@ elif instr_type == 'I':
 
     # Now we can convert to 2's complement since all of the leading zeros have been added
     if negative_imm:
-        # Reverse immediate to work from LSB to MSB
-        imm = imm[::-1]
-        complement = ''
-        
-        # Convert the immediate to 2's complement. Easiest way to do this
-        # is to keep the first 1 that you come across, and then flip every bit
-        # beyond that.
-
-        # Flipping logic
-        one_encountered = False
-        for bit in imm:
-            if one_encountered == True:
-                if bit == '1':
-                    complement += '0'
-                else:
-                    complement += '1'
-            else:
-                if bit == '1':
-                    complement += '1'
-                    one_encountered = True
-                else:
-                    complement += '0'
-        
-        # Assigning new address
-        imm = complement[::-1]
+        imm = op.twos_complement(imm)
 
     # Putting full instruction together
     machine_binary = opcode + imm + rn + rd
@@ -142,26 +141,7 @@ elif instr_type == 'D':
 
     # Now we can convert to 2's complement since all of the leading zeros have been added
     if negative_address:
-        address = address[::-1]
-        complement = ''
-
-        # Flipping logic
-        one_encountered = False
-        for bit in address:
-            if one_encountered == True:
-                if bit == '1':
-                    complement += '0'
-                else:
-                    complement += '1'
-            else:
-                if bit == '1':
-                    complement += '1'
-                    one_encountered = True
-                else:
-                    complement += '0'
-        
-        # Assigning new address
-        address = complement[::-1]
+        address = op.twos_complement(address)
 
     # Putting full instruction together
     machine_binary = opcode + address + two_bit_op + rn + rt
@@ -186,26 +166,7 @@ elif instr_type == 'B':
 
     # 2's complemnt logic
     if negative_address:
-        address = address[::-1]
-        complement = ''
-
-        # Flipping logic
-        one_encountered = False
-        for bit in address:
-            if one_encountered == True:
-                if bit == '1':
-                    complement += '0'
-                else:
-                    complement += '1'
-            else:
-                if bit == '1':
-                    complement += '1'
-                    one_encountered = True
-                else:
-                    complement += '0'
-        
-        # Assigning new address
-        address = complement[::-1]
+        address = op.twos_complement(address)
 
     # Putting full instruction together
     machine_binary = opcode + address
@@ -242,26 +203,7 @@ elif instr_type == 'CB':
 
     # 2's complemnt logic
     if negative_address:
-        address = address[::-1]
-        complement = ''
-
-        # Flipping logic
-        one_encountered = False
-        for bit in address:
-            if one_encountered == True:
-                if bit == '1':
-                    complement += '0'
-                else:
-                    complement += '1'
-            else:
-                if bit == '1':
-                    complement += '1'
-                    one_encountered = True
-                else:
-                    complement += '0'
-        
-        # Assigning new address
-        address = complement[::-1]
+        op.twos_complement(address)
 
     # Putting full instruction together
     machine_binary = opcode + address + rt
@@ -298,25 +240,7 @@ elif instr_type == 'IM':
     #print(imm, ' ', rd)
 
     if negative_imm:
-        imm = imm[::-1]
-        complement = ''
-        
-        one_encountered = False
-        for bit in imm:
-            if one_encountered == True:
-                if bit == '1':
-                    complement += '0'
-                else:
-                    complement += '1'
-            else:
-                if bit == '1':
-                    complement += '1'
-                    one_encountered = True
-                else:
-                    complement += '0'
-        
-        # Assigning new address
-        imm = complement[::-1]
+        imm = op.twos_complement(imm)
 
     # Putting full instruction together
     machine_binary = opcode + imm + rd
